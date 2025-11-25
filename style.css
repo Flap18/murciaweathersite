@@ -1,1 +1,65 @@
-nada aqui 2
+body {
+    font-family: Arial, Helvetica, sans-serif;
+    margin: 0;
+    padding: 0;
+    background-color: #d5e4d9;
+    color: #000;
+}
+
+header {
+    background-color: #387b5b;
+    color: white;
+    padding: 10px 20px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+header nav a {
+    color: white;
+    text-decoration: none;
+    margin: 0 10px;
+    font-weight: bold;
+}
+
+header nav a:hover {
+    text-decoration: underline;
+}
+
+.main-content {
+    padding: 20px;
+}
+
+h1, h2, h3 {
+    color: #387b5b;
+}
+
+footer {
+    text-align: center;
+    padding: 15px;
+    background-color: #387b5b;
+    color: white;
+    margin-top: 20px;
+}
+
+/* Widgets */
+.widget {
+    background-color: rgba(62, 74, 71, 0.9);
+    color: white;
+    border-radius: 10px;
+    padding: 15px;
+    margin-bottom: 20px;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+    text-align: center;
+}
+
+@media (max-width: 768px) {
+    header nav {
+        display: flex;
+        flex-direction: column;
+        align-items: flex-start;
+    }
+    header nav a {
+        margin: 5px 0;
+    }
+}
