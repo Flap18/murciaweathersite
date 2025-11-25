@@ -57,6 +57,242 @@
         max-width: 300px;
         box-shadow: 0 4px 8px rgba(0,0,0,0.2);
     }
+    <!-- Barra de avisos AEMET lista para pegar en Google Sites -->
+<div id="alerta-meteo" style="position:relative;font-family:Arial,Helvetica,sans-serif;">
+
+<style>
+  /* Encapsulado con #alerta-meteo para evitar conflictos en Google Sites */
+  #alerta-meteo .alerta-meteorologica {
+    background: #ffcc33; /* amarillo más tirando a naranja (aviso) */
+    color: #000;
+    font-size: 18px;
+    padding: 10px 0;
+    width: 100%;
+    overflow: hidden;
+    white-space: nowrap;
+    box-sizing: border-box;
+  }
+
+  #alerta-meteo .avisos-wrapper {
+    display: flex;
+    align-items: center;
+    animation: mover 25s linear infinite;
+  }
+
+  #alerta-meteo .avisos-container {
+    display: flex;
+  }
+
+  #alerta-meteo .aviso {
+    display: inline-block;
+    margin-right: 18px;
+    padding: 10px 18px;
+    background: #d5e4d9;
+    color: #000;
+    text-decoration: none;
+    border-radius: 6px;
+    font-size: 15px;
+    transition: transform .15s;
+  }
+
+  #alerta-meteo .aviso:hover { transform: translateY(-2px); }
+
+  #alerta-meteo .meta {
+    display:flex;
+    align-items:center;
+    gap:12px;
+    margin-left:12px;
+    white-space:nowrap;
+  }
+
+  #alerta-meteo .estado {
+    font-size:13px;
+    padding:6px 10px;
+    border-radius:6px;
+    background: rgba(0,0,0,0.06);
+  }
+
+  #alerta-meteo .btn {
+    cursor:pointer;
+    padding:6px 10px;
+    border-radius:6px;
+    border:0;
+    background:#000;
+    color:#fff;
+    font-size:13px;
+  }
+
+  #alerta-meteo .error {
+    color:#800;
+    font-weight:600;
+    margin-left:10px;
+  }
+
+  @keyframes mover {
+    from { transform: translateX(100%); }
+    to   { transform: translateX(-100%); }
+  }
+
+  /* Pausar on hover */
+  #alerta-meteo .alerta-meteorologica:hover .avisos-wrapper {
+    animation-play-state: paused;
+  }
+
+  /* Responsive: reducir tamaño en móviles */
+  @media (max-width:600px){
+    #alerta-meteo .alerta-meteorologica { font-size:16px; }
+    #alerta-meteo .aviso { padding:8px 12px; font-size:14px; }
+    #alerta-meteo .meta { display:none; } /* oculta meta en pantallas pequeñas */
+  }
+</style>
+
+<div class="alerta-meteorologica" role="region" aria-label="Avisos meteorológicos">
+  <div class="avisos-wrapper" id="avisosWrapper">
+    <div class="avisos-container" id="avisos1"></div>
+    <div class="avisos-container" id="avisos2"></div>
+    <div class="avisos-container" id="avisos3"></div>
+
+    <!-- Zona de estado y control -->
+    <div class="meta" id="metaInfo" aria-hidden="false" style="margin-left:20px;">
+      <div class="estado" id="estadoText">Cargando avisos…</div>
+      <button class="btn" id="btnReintentar" type="button">Reintentar</button>
+      <div id="lastUpdated" style="font-size:12px;color:rgba(0,0,0,0.6);">—</div>
+    </div>
+  </div>
+</div>
+
+<script>
+(function(){
+  const RSS_URL = "https://www.aemet.es/documentos_d/eltiempo/prediccion/avisos/rss/CAP_AFAC73_RSS.xml";
+  // Proxy público (puede fallar ocasionalmente). Si falla, ver mensaje y la consola.
+  const PROXIES = [
+    "https://api.allorigins.win/raw?url=",
+    "https://api.allorigins.cf/raw?url=",
+    // Si tienes un proxy propio, añádelo aquí al frente del array:
+    // "https://tu-proxy.com/raw?url="
+  ];
+
+  const MAX_RETRIES = 3;
+  const TIMEOUT_MS = 10000;
+
+  const estadoText = document.getElementById("estadoText");
+  const lastUpdated = document.getElementById("lastUpdated");
+  const btnReintentar = document.getElementById("btnReintentar");
+  const avisosEls = [document.getElementById("avisos1"), document.getElementById("avisos2"), document.getElementById("avisos3")];
+
+  let lastSuccess = null;
+
+  btnReintentar.addEventListener("click", () => {
+    cargarAvisos(true);
+  });
+
+  function timeoutFetch(resource, options = {}) {
+    const { timeout = TIMEOUT_MS } = options;
+    return Promise.race([
+      fetch(resource, options),
+      new Promise((_, reject) => setTimeout(() => reject(new Error("timeout")), timeout))
+    ]);
+  }
+
+  async function fetchWithProxies(url) {
+    let lastError = null;
+    for (let i=0; i<PROXIES.length; i++) {
+      const proxy = PROXIES[i];
+      try {
+        const r = await timeoutFetch(proxy + encodeURIComponent(url));
+        if (!r.ok) throw new Error(`HTTP ${r.status} desde proxy ${proxy}`);
+        const text = await r.text();
+        return { text, proxy };
+      } catch (err) {
+        lastError = err;
+        console.warn("Proxy fallo:", PROXIES[i], err);
+      }
+    }
+    throw lastError || new Error("No hay proxies disponibles");
+  }
+
+  async function cargarAvisos(forzar=false) {
+    estadoText.textContent = "Cargando avisos…";
+    estadoText.style.background = "transparent";
+    let intentos = 0;
+    let success = false;
+    let lastErr = null;
+
+    while (intentos < MAX_RETRIES && !success) {
+      intentos++;
+      try {
+        const { text, proxy } = await fetchWithProxies(RSS_URL);
+        const doc = new DOMParser().parseFromString(text, "text/xml");
+        const items = [...doc.querySelectorAll("item")];
+
+        const avisosArr = items
+            .filter(i => i.querySelector("title")?.textContent.includes("Aviso. Nivel"))
+            .map(i => {
+                const titulo = i.querySelector("title").textContent;
+                const pub = i.querySelector("pubDate")?.textContent || "";
+                const fecha = formatearFecha(pub);
+                const url = "https://www.aemet.es/es/eltiempo/prediccion/avisos?p=7330";
+                return `<a class="aviso" href="${url}" target="_blank" rel="noopener noreferrer">${escapeHtml(titulo)} - ${fecha}</a>`;
+            });
+
+        const html = avisosArr.join("") || `<span class="aviso">No hay avisos activos</span>`;
+
+        // Rellenar contenedores (duplicados para crear efecto continuo)
+        avisosEls.forEach(el => el.innerHTML = html);
+
+        success = true;
+        lastSuccess = new Date();
+        lastUpdated.textContent = `Actualizado: ${formatDateTime(lastSuccess)} (proxy: ${proxy})`;
+        estadoText.textContent = "Avisos cargados";
+        estadoText.style.background = "transparent";
+      } catch (err) {
+        lastErr = err;
+        console.error("Error al cargar avisos (intento " + intentos + "):", err);
+        estadoText.textContent = `Error cargando (intento ${intentos}/${MAX_RETRIES})`;
+        estadoText.style.background = "rgba(0,0,0,0.06)";
+        // espera breve antes del siguiente intento
+        await sleep(900);
+      }
+    }
+
+    if (!success) {
+      // Mensaje visible y sugerencias básicas en la UI
+      avisosEls.forEach(el => el.innerHTML = `<span class="aviso" style="background:#ffd6d6;color:#600;">No se han podido cargar los avisos.</span>`);
+      estadoText.innerHTML = `Error: API/proxy no responde <span class="error">[ver consola]</span>`;
+      lastUpdated.textContent = `Último intento: ${formatDateTime(new Date())}`;
+      // Muestra además un consejo rápido (texto breve)
+      console.warn("Diagnóstico: comprueba si el proxy público está operativo, o añade un proxy propio en el array PROXIES del script. Error completo:", lastErr);
+    }
+  }
+
+  function formatearFecha(f) {
+    const d = new Date(f || Date.now());
+    if (isNaN(d)) return "-";
+    return `${String(d.getDate()).padStart(2,"0")}/${String(d.getMonth()+1).padStart(2,"0")}/${d.getFullYear()}`;
+  }
+
+  function formatDateTime(d){
+    return d.toLocaleString();
+  }
+
+  function sleep(ms){ return new Promise(r => setTimeout(r, ms)); }
+
+  function escapeHtml(unsafe){
+    return unsafe.replace(/[&<"'>]/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[m]));
+  }
+
+  // Lanzar carga inicial
+  cargarAvisos();
+
+  // Actualizar automáticamente cada 10 minutos (si deseas otro intervalo, cambia el valor)
+  setInterval(() => cargarAvisos(), 10 * 60 * 1000);
+
+  // Exponer función a consola para pruebas: window.cargarAvisos()
+  window.cargarAvisosAvisos = cargarAvisos;
+
+})();
+</script>
+
     .widget h2 { margin-bottom: 10px; font-size: 18px; }
     .weather-icon { font-size: 40px; }
     .description { margin: 8px 0; font-size: 14px; }
@@ -149,7 +385,8 @@
 <main>
     <!-- WIDGET CLIMA -->
     <div class="widget" id="weather-widget">
-        <h2>Clima Ahora</h2>
+        <h2>Ahora</h2>
+        <div class="city-name" id="city-name">San Basilio, Murcia</div>
         <div class="weather-icon" id="weather-icon">☀️</div>
         <div class="description" id="weather-description">Cargando...</div>
         <div class="temperature" id="temperature">Cargando...</div>
@@ -275,3 +512,4 @@
 </script>
 </body>
 </html>
+
