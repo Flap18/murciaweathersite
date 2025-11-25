@@ -1,299 +1,295 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Murcia Weather Site</title>
-    <style>
-        /* RESET BÁSICO */
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-        body {
-            font-family: Arial, sans-serif;
-            background-color: #d5e4d9;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            min-height: 100vh;
-        }
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Murcia Weather Site</title>
+<style>
+    /* RESET BÁSICO */
+    * { margin: 0; padding: 0; box-sizing: border-box; }
 
-        header {
-            width: 100%;
-            background-color: #3e4a47;
-            padding: 10px 0;
-        }
-        header nav {
-            display: flex;
-            justify-content: center;
-            gap: 20px;
-        }
-        header nav a {
-            color: white;
-            text-decoration: none;
-            font-weight: bold;
-        }
-        header nav a:hover {
-            text-decoration: underline;
-        }
+    body {
+        font-family: Arial, sans-serif;
+        background-color: #d5e4d9;
+        display: flex;
+        flex-direction: column;
+        min-height: 100vh;
+        color: #333;
+    }
 
-        main {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 20px;
-            padding: 20px;
-            width: 100%;
-            max-width: 1000px;
-        }
+    header {
+        width: 100%;
+        background-color: #3e4a47;
+        padding: 10px 0;
+    }
 
-        /* WIDGETS CLIMA */
-        .widget {
-            background-color: rgba(62, 74, 71, 0.9);
-            color: white;
-            border-radius: 10px;
-            padding: 20px;
-            text-align: center;
-            width: 90%;
-            max-width: 300px;
-            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
-        }
-        .widget h2 {
-            margin-bottom: 10px;
-            font-size: 18px;
-        }
-        .weather-icon { font-size: 40px; }
-        .description { margin: 8px 0; font-size: 14px; }
-        .temperature { font-size: 30px; margin: 8px 0; }
-        .temp-range { font-size: 14px; margin: 8px 0; }
-        .wind-speed { font-size: 14px; margin-top: 8px; }
-        .thermometer { font-size: 16px; }
+    header nav {
+        display: flex;
+        justify-content: center;
+        flex-wrap: wrap;
+        gap: 15px;
+    }
 
-        /* WIDGET CALIDAD AIRE */
-        .aq-widget {
-            cursor: pointer;
-        }
-        .aqi-level { font-size: 40px; margin: 10px 0; }
-        .pollutants { font-size: 12px; margin-top: 10px; }
-        .last-updated { font-size: 12px; color: #d5e4d9; margin-top: 10px; }
+    header nav a {
+        color: white;
+        text-decoration: none;
+        font-weight: bold;
+        padding: 5px 10px;
+        border-radius: 5px;
+        transition: background 0.3s;
+    }
 
-        /* COLORES AQI */
-        .good { color: #4CAF50; }
-        .moderate { color: #FFEB3B; }
-        .unhealthy { color: #FF9800; }
-        .unhealthy-for-sensitive { color: #FF5722; }
-        .very-unhealthy { color: #F44336; }
-        .hazardous { color: #D32F2F; }
+    header nav a:hover, header nav a.active {
+        background-color: #4CAF50;
+    }
 
-        footer {
-            margin-top: auto;
-            padding: 10px;
-            background-color: #3e4a47;
-            color: white;
-            width: 100%;
-            text-align: center;
-        }
+    main {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 20px;
+        padding: 20px;
+        width: 100%;
+        max-width: 1000px;
+    }
 
-    </style>
+    /* WIDGETS CLIMA Y AQI */
+    .widget {
+        background-color: rgba(62, 74, 71, 0.9);
+        color: white;
+        border-radius: 10px;
+        padding: 20px;
+        text-align: center;
+        width: 90%;
+        max-width: 300px;
+        box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+    }
+
+    .widget h2 {
+        margin-bottom: 10px;
+        font-size: 18px;
+    }
+
+    .weather-icon { font-size: 40px; }
+    .description { margin: 8px 0; font-size: 14px; }
+    .temperature { font-size: 30px; margin: 8px 0; }
+    .temp-range { font-size: 14px; margin: 8px 0; }
+    .wind-speed { font-size: 14px; margin-top: 8px; }
+    .thermometer { font-size: 16px; }
+
+    .aq-widget { cursor: pointer; }
+    .aqi-level { font-size: 40px; margin: 10px 0; }
+    .pollutants { font-size: 12px; margin-top: 10px; }
+    .last-updated { font-size: 12px; color: #d5e4d9; margin-top: 10px; }
+
+    /* COLORES AQI */
+    .good { color: #4CAF50; }
+    .moderate { color: #FFEB3B; }
+    .unhealthy { color: #FF9800; }
+    .unhealthy-for-sensitive { color: #FF5722; }
+    .very-unhealthy { color: #F44336; }
+    .hazardous { color: #D32F2F; }
+
+    /* RADAR Y SATELITE */
+    .container {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: center;
+        gap: 15px;
+        width: 100%;
+    }
+
+    .image-container {
+        position: relative;
+        width: 48%;
+        padding-bottom: 50%;
+        overflow: hidden;
+        border-radius: 10px;
+        box-shadow: 0 0 10px rgba(0,0,0,0.3);
+    }
+
+    .image-container h3 {
+        position: absolute;
+        top: 10px;
+        left: 10px;
+        color: white;
+        background-color: rgba(0,0,0,0.5);
+        padding: 5px;
+        font-size: 16px;
+        border-radius: 5px;
+    }
+
+    .image-container img {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+    }
+
+    .image-container a {
+        display: block;
+        width: 100%;
+        height: 100%;
+    }
+
+    footer {
+        padding: 10px;
+        background-color: #3e4a47;
+        color: white;
+        text-align: center;
+        font-size: 14px;
+    }
+
+    /* MEDIA QUERIES */
+    @media(max-width: 600px){
+        header nav { gap: 8px; }
+        .widget { max-width: 90%; }
+        .temperature { font-size: 24px; }
+        .weather-icon { font-size: 30px; }
+        .container .image-container { width: 100%; padding-bottom: 50%; }
+    }
+
+</style>
 </head>
 <body>
 
-    <header>
-        <nav>
-            <a href="index.html">Inicio</a>
-            <a href="prevision.html">Previsión</a>
-            <a href="radar-sat.html">Radar/Satélite</a>
-            <a href="tiempo-real.html">Tiempo Real</a>
-            <a href="aviso-legal.html">Aviso Legal</a>
-        </nav>
-    </header>
+<header>
+    <nav>
+        <a href="index.html" class="active">Inicio</a>
+        <a href="prevision.html">Previsión</a>
+        <a href="radar-sat.html">Radar/Satélite</a>
+        <a href="tiempo-real.html">Tiempo Real</a>
+        <a href="aviso-legal.html">Aviso Legal</a>
+    </nav>
+</header>
 
-    <main>
-        <!-- WIDGET CLIMA -->
-        <div class="widget" id="weather-widget">
-            <h2>Clima Ahora</h2>
-            <div class="weather-icon" id="weather-icon">☀️</div>
-            <div class="description" id="weather-description">Cargando...</div>
-            <div class="temperature" id="temperature">Cargando...</div>
-            <div class="temp-range" id="temp-range"></div>
-            <div class="wind-speed" id="wind-speed">💨 Cargando...</div>
-        </div>
-
-        <!-- WIDGET CALIDAD AIRE -->
-        <div class="widget aq-widget" id="air-quality-widget" onclick="window.open('https://aqicn.org/city/spain/murcia/san-basilio-murcia-ciudad/es/m', '_blank')">
-            <h2>Calidad del Aire</h2>
-            <div class="aqi-level" id="aqi-level">AQI: <span id="aqi-value">Cargando...</span></div>
-            <div class="description" id="description">Cargando...</div>
-            <div class="pollutants" id="pollutants">Cargando...</div>
-            <div class="last-updated" id="last-updated">Última actualización: Cargando...</div>
-        </div>
-    </main>
-
-    <footer>
-        Murcia Weather Site &copy; 2025
-    </footer>
-
-    <script>
-        // === CLIMA ===
-        const weatherApi = 'https://api.open-meteo.com/v1/forecast?latitude=37.9838&longitude=-1.128&current_weather=true&timezone=Europe/Madrid';
-        const weatherDescriptions = {
-            0:"Despejado",1:"Mayormente despejado",2:"Parcialmente nublado",3:"Nublado",
-            45:"Niebla",48:"Niebla escarchada",51:"Llovizna ligera",53:"Llovizna moderada",
-            55:"Llovizna densa",61:"Lluvia ligera",63:"Lluvia moderada",65:"Lluvia intensa",
-            80:"Chubascos ligeros",81:"Chubascos moderados",82:"Chubascos intensos",
-            95:"Tormenta",96:"Tormenta con granizo ligero",99:"Tormenta con granizo fuerte"
-        };
-
-        fetch(weatherApi)
-            .then(r => r.json())
-            .then(data => {
-                const w = data.current_weather;
-                const code = w.weathercode;
-                const isDay = w.is_day===1;
-                let icon='☀️';
-                if(code===0||code===1){ icon=isDay?'☀️':'🌙'; }
-                else if(code===2||code===3){ icon=isDay?'⛅':'🌙☁️'; }
-                else if([45,48].includes(code)){ icon='🌫️'; }
-                else if([51,53,55].includes(code)){ icon=isDay?'🌦️':'🌙🌧️'; }
-                else if([61,63,65].includes(code)){ icon=isDay?'🌧️':'🌙🌧️'; }
-                else if([80,81,82].includes(code)){ icon=isDay?'🌦️':'🌙🌦️'; }
-                else if([95,96,99].includes(code)){ icon=isDay?'⛈️':'🌙⛈️'; }
-
-                const temp = w.temperature.toFixed(1);
-                const tempMin = (w.temperature-2).toFixed(1);
-                const tempMax = (w.temperature+2).toFixed(1);
-                const wind = w.windspeed.toFixed(1);
-                const dir = w.winddirection;
-                let windDir = '';
-                if(dir>=0&&dir<45){windDir='N';}
-                else if(dir>=45&&dir<135){windDir='E';}
-                else if(dir>=135&&dir<225){windDir='S';}
-                else if(dir>=225&&dir<315){windDir='O';}
-                else{windDir='N';}
-
-                document.getElementById('weather-icon').innerHTML=icon;
-                document.getElementById('weather-description').innerText=weatherDescriptions[code]||"Desconocido";
-                document.getElementById('temperature').innerText=temp+'°C';
-                document.getElementById('temp-range').innerHTML=`<span class="thermometer" style="color:blue;">🟦</span> Min: ${tempMin}°C <span class="thermometer" style="color:red;">🟥</span> Max: ${tempMax}°C`;
-                document.getElementById('wind-speed').innerHTML=`💨 ${wind} km/h (${windDir})`;
-            })
-            .catch(err => console.error(err));
-
-        // === CALIDAD AIRE ===
-        const aqiApi = 'https://api.waqi.info/feed/@5183/?token=250e8cad495de5606efa20484f8904b22f3a7356';
-        fetch(aqiApi)
-            .then(r=>r.json())
-            .then(data=>{
-                const aqi = data.data.aqi;
-                const pm25 = data.data.iaqi.pm25.v;
-                const pm10 = data.data.iaqi.pm10.v;
-                const last = new Date(data.data.time.s);
-
-                const aqiEl = document.getElementById('aqi-value');
-                aqiEl.innerText=aqi;
-                aqiEl.className=getAqiColorClass(aqi);
-
-                document.getElementById('description').innerText=getAirQualityDesc(aqi);
-                document.getElementById('pollutants').innerHTML=`PM2.5: <span class="${getPollutantColorClass(pm25)}">${pm25} µg/m³</span><br>PM10: <span class="${getPollutantColorClass(pm10)}">${pm10} µg/m³</span>`;
-                document.getElementById('last-updated').innerText=`Última actualización: ${last.toLocaleTimeString()}`;
-            }).catch(err=>console.error(err));
-
-        function getAirQualityDesc(aqi){
-            if(aqi<=50) return "Buena 🌿";
-            if(aqi<=100) return "Razonablemente buena 🌞";
-            if(aqi<=150) return "Regular 😷";
-            if(aqi<=200) return "Desfavorable 😷";
-            if(aqi<=300) return "Muy desfavorable 😷⚠️";
-            return "Extremadamente desfavorable 🛑";
-        }
-        function getAqiColorClass(aqi){
-            if(aqi<=50) return "good";
-            if(aqi<=100) return "moderate";
-            if(aqi<=150) return "unhealthy";
-            if(aqi<=200) return "unhealthy-for-sensitive";
-            if(aqi<=300) return "very-unhealthy";
-            return "hazardous";
-        }
-        function getPollutantColorClass(v){
-            if(v<=12) return "good";
-            if(v<=35) return "moderate";
-            if(v<=55) return "unhealthy";
-            if(v<=150) return "unhealthy-for-sensitive";
-            if(v<=250) return "very-unhealthy";
-            return "hazardous";
-        }
-    </script>
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Radar y Satélite</title>
-    <style>
-        /* Contenedor principal que usa flexbox para que las imágenes se adapten y alineen */
-        .container {
-            display: flex;
-            justify-content: space-between;
-            flex-wrap: wrap;  /* Permite que las imágenes se ajusten en dispositivos más pequeños */
-            gap: 10px;
-            margin: 20px;
-        }
-
-        /* Contenedor de cada imagen */
-        .image-container {
-            position: relative;
-            width: 48%; /* Ocupa el 48% del ancho del contenedor, ajustable según el espacio disponible */
-            height: 0;
-            padding-bottom: 50%; /* Mantiene una relación de aspecto cuadrada */
-            overflow: hidden;
-            border-radius: 10px;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
-        }
-
-        /* Estilo para el texto encima de la imagen */
-        .image-container h3 {
-            position: absolute;
-            top: 10px;
-            left: 10px;
-            color: white;
-            background-color: rgba(0, 0, 0, 0.5);
-            padding: 5px;
-            font-size: 16px;
-            border-radius: 5px;
-        }
-
-        /* Estilo de las imágenes, para que se adapten al contenedor */
-        .image-container img {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            object-fit: cover; /* Hace que la imagen cubra el contenedor sin distorsionar */
-        }
-
-        /* Asegura que el enlace ocupe toda la imagen y permita hacer clic en cualquier parte */
-        .image-container a {
-            display: block;
-            width: 100%;
-            height: 100%;
-        }
-    </style>
-</head>
-
-<div class="container">
-    <!-- Contenedor para la imagen del Radar -->
-    <div class="image-container">
-        <h3>Radar</h3>
-        <a href="https://www.meteociel.fr/cartes_obs/radar/lastradar_sp.gif" target="_blank">
-            <img src="https://www.meteociel.fr/cartes_obs/radar/lastradar_sp.gif" alt="Radar">
-        </a>
+<main>
+    <!-- WIDGET CLIMA -->
+    <div class="widget" id="weather-widget">
+        <h2>Clima Ahora</h2>
+        <div class="weather-icon" id="weather-icon">☀️</div>
+        <div class="description" id="weather-description">Cargando...</div>
+        <div class="temperature" id="temperature">Cargando...</div>
+        <div class="temp-range" id="temp-range"></div>
+        <div class="wind-speed" id="wind-speed">💨 Cargando...</div>
     </div>
 
-    <!-- Contenedor para la imagen del Satélite -->
-    <div class="image-container">
-        <h3>Satelite</h3>
-        <a href="https://neige.meteociel.fr/satellite/anim_airmass_sp.gif" target="_blank">
-            <img src="https://neige.meteociel.fr/satellite/anim_airmass_sp.gif" alt="Satelite">
-        </a>
+    <!-- WIDGET CALIDAD AIRE -->
+    <div class="widget aq-widget" id="air-quality-widget" onclick="window.open('https://aqicn.org/city/spain/murcia/san-basilio-murcia-ciudad/es/m', '_blank')">
+        <h2>Calidad del Aire</h2>
+        <div class="aqi-level" id="aqi-level">AQI: <span id="aqi-value">Cargando...</span></div>
+        <div class="description" id="description">Cargando...</div>
+        <div class="pollutants" id="pollutants">Cargando...</div>
+        <div class="last-updated" id="last-updated">Última actualización: Cargando...</div>
     </div>
-</div>
+
+    <!-- RADAR Y SATELITE -->
+    <div class="container">
+        <div class="image-container">
+            <h3>Radar</h3>
+            <a href="https://www.meteociel.fr/cartes_obs/radar/lastradar_sp.gif" target="_blank">
+                <img src="https://www.meteociel.fr/cartes_obs/radar/lastradar_sp.gif" alt="Radar">
+            </a>
+        </div>
+        <div class="image-container">
+            <h3>Satélite</h3>
+            <a href="https://neige.meteociel.fr/satellite/anim_airmass_sp.gif" target="_blank">
+                <img src="https://neige.meteociel.fr/satellite/anim_airmass_sp.gif" alt="Satélite">
+            </a>
+        </div>
+    </div>
+</main>
+
+<footer>
+    Murcia Weather Site &copy; 2025
+</footer>
+
+<script>
+    // === CLIMA ===
+    const weatherApi = 'https://api.open-meteo.com/v1/forecast?latitude=37.9838&longitude=-1.128&current_weather=true&timezone=Europe/Madrid';
+    const weatherDescriptions = {0:"Despejado",1:"Mayormente despejado",2:"Parcialmente nublado",3:"Nublado",45:"Niebla",48:"Niebla escarchada",51:"Llovizna ligera",53:"Llovizna moderada",55:"Llovizna densa",61:"Lluvia ligera",63:"Lluvia moderada",65:"Lluvia intensa",80:"Chubascos ligeros",81:"Chubascos moderados",82:"Chubascos intensos",95:"Tormenta",96:"Tormenta con granizo ligero",99:"Tormenta con granizo fuerte"};
+
+    fetch(weatherApi)
+        .then(r => r.json())
+        .then(data => {
+            const w = data.current_weather;
+            const code = w.weathercode;
+            const isDay = w.is_day===1;
+            let icon='☀️';
+            if(code===0||code===1){ icon=isDay?'☀️':'🌙'; }
+            else if(code===2||code===3){ icon=isDay?'⛅':'🌙☁️'; }
+            else if([45,48].includes(code)){ icon='🌫️'; }
+            else if([51,53,55].includes(code)){ icon=isDay?'🌦️':'🌙🌧️'; }
+            else if([61,63,65].includes(code)){ icon=isDay?'🌧️':'🌙🌧️'; }
+            else if([80,81,82].includes(code)){ icon=isDay?'🌦️':'🌙🌦️'; }
+            else if([95,96,99].includes(code)){ icon=isDay?'⛈️':'🌙⛈️'; }
+
+            const temp = w.temperature.toFixed(1);
+            const tempMin = (w.temperature-2).toFixed(1);
+            const tempMax = (w.temperature+2).toFixed(1);
+            const wind = w.windspeed.toFixed(1);
+            const dir = w.winddirection;
+            let windDir = '';
+            if(dir>=0&&dir<45){windDir='N';}
+            else if(dir>=45&&dir<135){windDir='E';}
+            else if(dir>=135&&dir<225){windDir='S';}
+            else if(dir>=225&&dir<315){windDir='O';}
+            else{windDir='N';}
+
+            document.getElementById('weather-icon').innerHTML=icon;
+            document.getElementById('weather-description').innerText=weatherDescriptions[code]||"Desconocido";
+            document.getElementById('temperature').innerText=temp+'°C';
+            document.getElementById('temp-range').innerHTML=`<span class="thermometer" style="color:blue;">🟦</span> Min: ${tempMin}°C <span class="thermometer" style="color:red;">🟥</span> Max: ${tempMax}°C`;
+            document.getElementById('wind-speed').innerHTML=`💨 ${wind} km/h (${windDir})`;
+        })
+        .catch(err => console.error(err));
+
+    // === CALIDAD AIRE ===
+    const aqiApi = 'https://api.waqi.info/feed/@5183/?token=250e8cad495de5606efa20484f8904b22f3a7356';
+    fetch(aqiApi)
+        .then(r=>r.json())
+        .then(data=>{
+            const aqi = data.data.aqi;
+            const pm25 = data.data.iaqi.pm25.v;
+            const pm10 = data.data.iaqi.pm10.v;
+            const last = new Date(data.data.time.s);
+
+            const aqiEl = document.getElementById('aqi-value');
+            aqiEl.innerText=aqi;
+            aqiEl.className=getAqiColorClass(aqi);
+
+            document.getElementById('description').innerText=getAirQualityDesc(aqi);
+            document.getElementById('pollutants').innerHTML=`PM2.5: <span class="${getPollutantColorClass(pm25)}">${pm25} µg/m³</span><br>PM10: <span class="${getPollutantColorClass(pm10)}">${pm10} µg/m³</span>`;
+            document.getElementById('last-updated').innerText=`Última actualización: ${last.toLocaleTimeString()}`;
+        }).catch(err=>console.error(err));
+
+    function getAirQualityDesc(aqi){
+        if(aqi<=50) return "Buena 🌿";
+        if(aqi<=100) return "Razonablemente buena 🌞";
+        if(aqi<=150) return "Regular 😷";
+        if(aqi<=200) return "Desfavorable 😷";
+        if(aqi<=300) return "Muy desfavorable 😷⚠️";
+        return "Extremadamente desfavorable 🛑";
+    }
+    function getAqiColorClass(aqi){
+        if(aqi<=50) return "good";
+        if(aqi<=100) return "moderate";
+        if(aqi<=150) return "unhealthy";
+        if(aqi<=200) return "unhealthy-for-sensitive";
+        if(aqi<=300) return "very-unhealthy";
+        return "hazardous";
+    }
+    function getPollutantColorClass(v){
+        if(v<=12) return "good";
+        if(v<=35) return "moderate";
+        if(v<=55) return "unhealthy";
+        if(v<=150) return "unhealthy-for-sensitive";
+        if(v<=250) return "very-unhealthy";
+        return "hazardous";
+    }
+</script>
 </body>
 </html>
-
