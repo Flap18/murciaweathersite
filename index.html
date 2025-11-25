@@ -221,6 +221,79 @@
             return "hazardous";
         }
     </script>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Radar y Satélite</title>
+    <style>
+        /* Contenedor principal que usa flexbox para que las imágenes se adapten y alineen */
+        .container {
+            display: flex;
+            justify-content: space-between;
+            flex-wrap: wrap;  /* Permite que las imágenes se ajusten en dispositivos más pequeños */
+            gap: 10px;
+            margin: 20px;
+        }
 
+        /* Contenedor de cada imagen */
+        .image-container {
+            position: relative;
+            width: 48%; /* Ocupa el 48% del ancho del contenedor, ajustable según el espacio disponible */
+            height: 0;
+            padding-bottom: 50%; /* Mantiene una relación de aspecto cuadrada */
+            overflow: hidden;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
+        }
+
+        /* Estilo para el texto encima de la imagen */
+        .image-container h3 {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            color: white;
+            background-color: rgba(0, 0, 0, 0.5);
+            padding: 5px;
+            font-size: 16px;
+            border-radius: 5px;
+        }
+
+        /* Estilo de las imágenes, para que se adapten al contenedor */
+        .image-container img {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: cover; /* Hace que la imagen cubra el contenedor sin distorsionar */
+        }
+
+        /* Asegura que el enlace ocupe toda la imagen y permita hacer clic en cualquier parte */
+        .image-container a {
+            display: block;
+            width: 100%;
+            height: 100%;
+        }
+    </style>
+</head>
+
+<div class="container">
+    <!-- Contenedor para la imagen del Radar -->
+    <div class="image-container">
+        <h3>Radar</h3>
+        <a href="https://www.meteociel.fr/cartes_obs/radar/lastradar_sp.gif" target="_blank">
+            <img src="https://www.meteociel.fr/cartes_obs/radar/lastradar_sp.gif" alt="Radar">
+        </a>
+    </div>
+
+    <!-- Contenedor para la imagen del Satélite -->
+    <div class="image-container">
+        <h3>Satelite</h3>
+        <a href="https://neige.meteociel.fr/satellite/anim_airmass_sp.gif" target="_blank">
+            <img src="https://neige.meteociel.fr/satellite/anim_airmass_sp.gif" alt="Satelite">
+        </a>
+    </div>
+</div>
 </body>
 </html>
+
