@@ -3,36 +3,143 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Aviso Legal</title>
-<link rel="stylesheet" href="css/style.css">
+<title>Aviso Legal - Murcia Weather Site</title>
+<style>
+    /* RESET BÁSICO */
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+        font-family: Arial, sans-serif;
+        background-color: #d5e4d9;
+        display: flex;
+        flex-direction: column;
+        min-height: 100vh;
+        color: #333;
+    }
+
+    header {
+        background-color: #3e4a47;
+        color: white;
+        padding: 10px 20px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+    }
+
+    header .logo {
+        font-size: 20px;
+        font-weight: bold;
+        margin-bottom: 10px;
+    }
+
+    nav {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: center;
+        gap: 15px;
+    }
+
+    nav a {
+        color: white;
+        text-decoration: none;
+        font-weight: bold;
+        padding: 5px 10px;
+        border-radius: 5px;
+        transition: background 0.3s;
+    }
+
+    nav a:hover, nav a.active {
+        background-color: #4CAF50;
+    }
+
+    main {
+        flex: 1;
+        width: 90%;
+        max-width: 900px;
+        margin: 20px auto;
+        padding: 20px;
+        background-color: rgba(62, 74, 71, 0.9);
+        color: white;
+        border-radius: 10px;
+        box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+    }
+
+    main h1 {
+        margin-bottom: 15px;
+        font-size: 22px;
+        text-align: center;
+        color: #FFEB3B;
+    }
+
+    main p {
+        margin-bottom: 12px;
+        line-height: 1.6;
+        font-size: 14px;
+    }
+
+    main p strong {
+        color: #FFD700;
+    }
+
+    footer {
+        padding: 10px;
+        background-color: #3e4a47;
+        color: white;
+        text-align: center;
+        font-size: 14px;
+    }
+
+    /* MEDIA QUERY PARA MÓVIL */
+    @media (max-width: 600px) {
+        header {
+            padding: 10px;
+        }
+        nav {
+            gap: 8px;
+        }
+        nav a {
+            font-size: 14px;
+            padding: 4px 8px;
+        }
+        main {
+            padding: 15px;
+            font-size: 13px;
+        }
+        main h1 {
+            font-size: 20px;
+        }
+    }
+</style>
 </head>
 <body>
+
 <header>
-<div class="logo">Murcia Weather Site</div>
-<nav>
-    <a href="index.html">Resumen</a>
-    <a href="prevision.html">Previsión</a>
-    <a href="radar-sat.html">Radar Sat</a>
-    <a href="tiempo-real.html">Tiempo Real</a>
-    <a href="aviso-legal.html">Aviso Legal</a>
-</nav>
+    <div class="logo">Murcia Weather Site</div>
+    <nav>
+        <a href="index.html">Resumen</a>
+        <a href="prevision.html">Previsión</a>
+        <a href="radar-sat.html">Radar Sat</a>
+        <a href="tiempo-real.html">Tiempo Real</a>
+        <a href="aviso-legal.html" class="active">Aviso Legal</a>
+    </nav>
 </header>
 
-<div class="main-content">
-<h1>Aviso Legal</h1>
-<p>Este sitio web ha sido creado sin ánimo de lucro y tiene como único propósito compartir información sobre el tiempo en Murcia mediante la inserción de contenido proveniente de otros servicios y/o páginas web.</p>
-<p>Algunos contenidos mostrados aquí pertenecen a terceros y son gestionados por las plataformas originales. Al hacer clic en los contenidos, serás redirigido a los sitios web de origen, que son los responsables de la información presentada.</p>
-<p>El titular de este sitio no se hace responsable de los cambios, actualizaciones o modificaciones que los sitios de terceros puedan realizar en los contenidos integrados.</p>
-<p>Los datos del tiempo en el widget así como de la página de Histórico Clima han sido obtenidos de Open Meteo.<br>
-Los datos de calidad de aire han sido obtenidos por aqicn.org a través de sinqlair.carm.es.</p>
-<p>Los contenidos multimedia e imágenes presentes en este sitio web no son de nuestra autoría. Se utilizan con fines ilustrativos.</p>
-<p>Si eres el propietario de algún contenido y deseas que se retire, por favor, ponte en contacto y tomaremos medidas de inmediato.<br>
-Correo electrónico de contacto: das.da775@gmail.com</p>
-<p>Fecha de última actualización: Marzo 2025.</p>
-</div>
+<main>
+    <h1>Aviso Legal</h1>
+    <p>Este sitio web ha sido creado sin ánimo de lucro y tiene como único propósito compartir información sobre el tiempo en Murcia mediante la inserción de contenido proveniente de otros servicios y/o páginas web.</p>
+    <p>Algunos contenidos mostrados aquí pertenecen a terceros y son gestionados por las plataformas originales. Al hacer clic en los contenidos, serás redirigido a los sitios web de origen, que son los responsables de la información presentada.</p>
+    <p>El titular de este sitio no se hace responsable de los cambios, actualizaciones o modificaciones que los sitios de terceros puedan realizar en los contenidos integrados.</p>
+    <p>Los datos del tiempo en el widget así como de la página de Histórico Clima han sido obtenidos de <strong>Open Meteo</strong>.<br>
+    Los datos de calidad de aire han sido obtenidos por <strong>aqicn.org</strong> a través de <strong>sinqlair.carm.es</strong>.</p>
+    <p>Los contenidos multimedia e imágenes presentes en este sitio web no son de nuestra autoría. Se utilizan con fines ilustrativos.</p>
+    <p>Si eres el propietario de algún contenido y deseas que se retire, por favor, ponte en contacto y tomaremos medidas de inmediato.<br>
+    Correo electrónico de contacto: <strong>das.da775@gmail.com</strong></p>
+    <p>Fecha de última actualización: Marzo 2025.</p>
+</main>
 
 <footer>
 &copy; 2025 Murcia Weather Site
 </footer>
+
 </body>
 </html>
